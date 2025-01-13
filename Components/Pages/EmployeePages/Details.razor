@@ -1,0 +1,50 @@
+@page "/employees/details"
+@using Microsoft.EntityFrameworkCore
+@using EmployeeManager.Data
+@inject IDbContextFactory<EmployeeManager.Data.EmployeeManagerDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Employee</h2>
+    <hr />
+    @if (employee is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">FirstName</dt>
+            <dd class="col-sm-10">@employee.FirstName</dd>
+            <dt class="col-sm-2">LastName</dt>
+            <dd class="col-sm-10">@employee.LastName</dd>
+            <dt class="col-sm-2">IsDeveloper</dt>
+            <dd class="col-sm-10">@employee.IsDeveloper</dd>
+        </dl>
+        <div>
+            <a href="@($"/employees/edit?id={employee.Id}")">Edit</a> |
+            <a href="@($"/employees")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Employee? employee;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        employee = await context.Employee.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (employee is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
