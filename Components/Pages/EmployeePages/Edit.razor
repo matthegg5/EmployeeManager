@@ -37,6 +37,19 @@ else
                     <InputCheckbox id="isdeveloper" @bind-Value="Employee.IsDeveloper" class="form-check-input" aria-required="true"/>
                     <ValidationMessage For="() => Employee.IsDeveloper" class="text-danger" />
                 </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department:</label>
+                    <InputSelect id="department" @bind-Value="Employee.DepartmentId" class="form-select" aria-required="true">
+                        @if (departments is not null)
+                        {
+                            @foreach (var department in departments)
+                            {
+                                <option value="@department.Id">@department.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Employee.DepartmentId" class="text-danger" />
+                </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>
@@ -54,10 +67,13 @@ else
     [SupplyParameterFromForm]
     private Employee? Employee { get; set; }
 
+    private Department[]? departments;
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         Employee ??= await context.Employee.FirstOrDefaultAsync(m => m.Id == Id);
+        departments = await context.Department.ToArrayAsync();
 
         if (Employee is null)
         {

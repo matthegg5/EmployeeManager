@@ -13,5 +13,8 @@ namespace EmployeeManager.Data
         public string? LastName { get; set; }
         [Required]
         public bool IsDeveloper { get; set; }
+        [Required(ErrorMessage = "The Department is required")]
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
     }
 }

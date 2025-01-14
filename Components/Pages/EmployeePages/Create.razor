@@ -30,7 +30,21 @@
                 <label for="isdeveloper" class="form-label">IsDeveloper:</label> 
                 <InputCheckbox id="isdeveloper" @bind-Value="Employee.IsDeveloper" class="form-check-input" aria-required="true"/> 
                 <ValidationMessage For="() => Employee.IsDeveloper" class="text-danger" /> 
-            </div>        
+            </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department:</label>
+                    <InputSelect id="department" @bind-Value="Employee.DepartmentId" class="form-select" aria-required="true">
+                        <option>Select...</option>
+                        @if (departments is not null)
+                        {
+                            @foreach (var department in departments)
+                            {
+                                <option value="@department.Id">@department.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Employee.DepartmentId" class="text-danger" />
+                </div>       
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -43,6 +57,14 @@
 @code {
     [SupplyParameterFromForm]
     private Employee Employee { get; set; } = new();
+
+    private Department[]? departments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        departments = await context.Department.ToArrayAsync();
+    }
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddEmployee()

@@ -23,6 +23,8 @@
             <dd class="col-sm-10">@employee.LastName</dd>
             <dt class="col-sm-2">IsDeveloper</dt>
             <dd class="col-sm-10">@employee.IsDeveloper</dd>
+            <dt class="col-sm-2">Department</dt>
+            <dd class="col-sm-10">@employee.Department!.Name</dd>
         </dl>
         <div>
             <a href="@($"/employees/edit?id={employee.Id}")">Edit</a> |
@@ -40,7 +42,9 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        employee = await context.Employee.FirstOrDefaultAsync(m => m.Id == Id);
+        employee = await context.Employee
+        .Include(d => d.Department)
+        .FirstOrDefaultAsync(m => m.Id == Id);
 
         if (employee is null)
         {
